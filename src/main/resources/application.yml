@@ -1,0 +1,97 @@
+spring:
+  application:
+    name: banking-api
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/banking}
+    username: ${DB_USERNAME:banking}
+    password: ${DB_PASSWORD:banking}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      pool-name: banking-pool
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      minimum-idle: 2
+      connection-timeout: 20000
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      # O schema e gerenciado pelo Flyway; o Hibernate apenas valida.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+        format_sql: false
+        default_batch_fetch_size: 20
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2s
+      connect-timeout: 2s
+
+  cache:
+    type: redis
+
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-stacktrace: never
+  compression:
+    enabled: true
+
+app:
+  version: 1.0.0
+  jwt:
+    # Em producao, injete via variavel de ambiente. Nunca versione o segredo real.
+    secret: ${JWT_SECRET:troque-este-segredo-de-desenvolvimento-com-no-minimo-32-caracteres}
+    issuer: banking-api
+    access-token-expiration: ${JWT_ACCESS_EXPIRATION:1h}
+    refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:7d}
+  seed:
+    # Cria usuarios e contas de demonstracao no primeiro start.
+    enabled: ${SEED_ENABLED:true}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    display-request-duration: true
+    doc-expansion: none
+    persist-authorization: true
+  default-produces-media-type: application/json
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+      probes:
+        enabled: true
+  info:
+    env:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.inacio.banking: ${LOG_LEVEL:INFO}
+    org.springframework.security: WARN

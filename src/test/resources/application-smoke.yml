@@ -1,0 +1,28 @@
+# Perfil de smoke test: sobe o contexto inteiro sem depender de Docker.
+# O schema vem do Hibernate sobre H2 e o cache e local, entao este perfil valida
+# o wiring e a documentacao — nao o comportamento de PostgreSQL/Redis, que e
+# coberto pelos testes de integracao com Testcontainers.
+spring:
+  datasource:
+    url: jdbc:h2:mem:banking;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+  cache:
+    type: simple
+
+app:
+  seed:
+    enabled: false
+  jwt:
+    secret: segredo-exclusivo-de-smoke-test-com-mais-de-32-caracteres
+
+logging:
+  level:
+    com.inacio.banking: WARN

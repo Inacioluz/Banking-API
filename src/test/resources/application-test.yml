@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    clean-disabled: false
+
+app:
+  seed:
+    enabled: false
+  jwt:
+    secret: segredo-exclusivo-de-teste-com-mais-de-32-caracteres
+    access-token-expiration: 15m
+    refresh-token-expiration: 1h
+
+logging:
+  level:
+    com.inacio.banking: WARN
+    org.testcontainers: WARN
+    org.springframework.test: WARN
